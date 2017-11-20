@@ -1,6 +1,6 @@
-# VMPC Stream Cipher
+# VMPC Stream cipher  
 Usage:  
 
 from VMPC import VMPC  
-cipher = VMPC(key, iv)  
-cipher_text = cipher.crypt(data)  
+cipher = VMPC(key)  
+cipher_text = cipher.crypt(data, iv)  

@@ -1,9 +1,8 @@
 class VMPC:
-    def __init__(self, key, iv=""):
+    def __init__(self, key):
         self.key = key
-        self.iv = iv
 
-    def ksa(self):
+    def ksa(self, iv):
         P = []
         K = self.key
         c = len(self.key)
@@ -14,19 +13,19 @@ class VMPC:
             n = m % 256
             s = P[(s + P[n] + ord(K[m % c])) % 256]
             P[n], P[s] = P[s], P[n]
-        if self.iv != "":
-            V = self.iv
-            z = len(self.iv)
+        if iv != "":
+            V = iv
+            z = len(iv)
             for m in range(768):
                 n = m % 256
                 s = P[(s + P[n] + ord(V[m % z])) % 256]
                 P[n], P[s] = P[s], P[n]
         return P, s
 
-    def crypt(self, data):
+    def crypt(self, data, iv=""):
         cipher_text = ""
         n = 0
-        P, s = self.ksa()
+        P, s = self.ksa(iv)
         for byte in data:
             s = P[(s + P[n]) % 256]
             cipher_text += chr(ord(byte) ^ P[(P[P[s]]+1) % 256])
@@ -42,8 +41,8 @@ class VMPC:
         iv = V.decode('hex')
         nbytes = 102400
         testdata = chr(0) * nbytes
-        cipher = VMPC(key, iv)
-        ctxt = cipher.crypt(testdata)
+        cipher = VMPC(key)
+        ctxt = cipher.crypt(testdata, iv)
         for key in vectors.keys():
             value = ctxt[key].encode('hex')
             vector = vectors[key]
